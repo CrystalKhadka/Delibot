@@ -1,0 +1,32 @@
+
+*{
+    margin: 0;
+    padding: 0;
+}
+.form-group {
+    margin-top: 1rem;
+}
+
+@media (max-width: 576px) {
+    .col-7.ps-5 {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .col-4.d-flex.justify-content-center.align-items-center {
+        display: none;
+    }
+}
+body{
+    background-image: url("../img/bg.jpg");
+    background-size: cover;
+    background-position: center;
+}
+.navbar-nav .nav-link {
+    font-size: 20px; /* Adjust the font size as per your needs */
+}
+
+
+

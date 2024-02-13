@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Food Ordering Site</title>
+    <link rel="icon" th:href="@{/img/logo1.png}" href="../../static/img/logo1.png">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f9f9f9; /* Updated background color */
+            color: #000000; /* Updated font color */
+            font-family: "Arial", sans-serif;
+        }
+
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .form-label {
+            color: black;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .logo {
+            max-width: 75%;
+            max-height: 75%;
+        }
+
+        @media (max-width: 768px) {
+            .logo-container {
+                height: auto;
+            }
+        }
+
+        /* Center the file chooser */
+        .custom-file-input {
+            text-align: center;
+        }
+        .custom-file-input input[type="file"] {
+            cursor: pointer;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row mt-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Registration Form</h2>
+                    <form th:action="@{/user/register}" method="POST" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <div style="height: 10rem; width: 10rem;" class="mb-3 mx-auto border overflow-hidden">
+                                <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" id="preview"
+                                     class="avatar img-circle img-thumbnail" alt="avatar">
+                            </div>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="image" name="image">
+                                <label class="custom-file-label" for="image">Choose file</label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="fname" class="form-label">First Name:</label>
+                                <input type="text" class="form-control" id="fname" name="firstName" required>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <label for="lname" class="form-label">Last Name:</label>
+                                <input type="text" class="form-control" id="lname" name="lastName" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password:</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Phone:</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address" class="form-label">Address:</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="role" id="user" value="User" required>
+                                <label class="form-check-label" for="user">
+                                    User
+                                </label>
+                        </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="role" id="admin" value="Admin" required>
+                                <label class="form-check-label" for="admin">
+                                    Admin
+                                </label>
+                            </div>
+                    </div>
+
+
+
+                        <button type="submit" class="btn btn-primary btn-block">Register</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p>Already have an account? <a href="/user/login">Login</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 d-flex justify-content-center align-items-center">
+            <div class="logo-container">
+                <img class="logo" src="../../static/img/login.png" th:src="@{/img/login.ong}"  alt="Logo">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.9/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.getElementById('image').addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
+</body>
+</html>

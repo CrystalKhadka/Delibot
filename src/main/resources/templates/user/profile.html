@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
+
+<!------ Include the above in your HEAD tag ---------->
+
+<head>
+    <title>Food Ordering Site</title>
+    <link rel="icon" th:href="@{/img/logo1.png}" href="../../static/img/logo1.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../static/css/header.css" rel="stylesheet" th:href="@{/css/header.css}">
+    <link href="../../static/css/footer.css" rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+
+<body>
+<header class="sticky-top" th:if="${user.role=='User'}">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid" style="min-height: 80px">
+            <a class="navbar-brand" href="#">
+                <!-- Replace the text with your logo or image -->
+                <img src="../../static/img/logo4.png" alt="Logo" th:src="@{/img/logo4.png}">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard/}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"  th:href="@{/dashboard/menu}">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cart/list">Cart</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" role="button" th:text="${user.firstName}" data-bs-toggle="dropdown" aria-expanded="false">
+                            Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/user/profile">View Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Delete Account</button></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" type="button" data-bs-target="#logoutConfirmationModal" data-bs-toggle="modal">Logout</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<header th:if="${user.role=='Admin'}" >
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid" style="min-height: 80px">
+            <a class="navbar-brand" href="#">
+                <img th:src="@{/img/logo4.png}" src="../../static/img/logo4.png" alt="">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdminSupportedContent" aria-controls="navbarAdminSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarAdminSupportedContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active"  href="/user/list">User List</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false"  >
+                            Item
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/item/add">Add Item</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/item/list">Item List</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${user.firstName}" >
+                            Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/user/profile">View Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Delete Account</button>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" type="button" data-bs-target="#logoutConfirmationModal" data-bs-toggle="modal">Logout</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<main >
+    <div class="mt-5 container" style="height: 40rem">
+        <div class="col-sm-12">
+                <!-- Bootstrap Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>View Profile</h3>
+                    </div>
+                    <div class="card-body">
+                        <form class="form" th:action="@{/user/update}" th:method="post" id="registrationForm"
+                              enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-5">
+                                    <div class="form-group m-4">
+                                        <div class="text-center">
+                                            <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" id="preview"
+                                                 class="avatar img-circle img-thumbnail" alt="avatar" th:src="'data:image/png;base64,'+${imageBase64}">
+                                            <h6>Upload a different photo...</h6>
+                                            <input accept="image/*" name="image" id="image" type="file"
+                                                   class="text-center center-block file-upload"  th:value="${imageBase64}">
+                                        </div><br>
+                                    </div>
+                                </div>
+
+                                    <div class="col-7">
+                                        <div class="form-group m-4">
+
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <label for="first_name"><h4>First name</h4></label>
+                                                <input type="text" class="form-control" name="fname"
+                                                       th:field="${user.firstName}" id="first_name" placeholder="first name"
+                                                       title="enter your first name if any.">
+                                            </div>
+                                            <div class="col-6">
+                                                <label for="last_name"><h4>Last name</h4></label>
+                                                <input type="text" class="form-control" name="lname"
+                                                       th:field="${user.lastName}" id="last_name" placeholder="last name"
+                                                       title="enter your last name if any.">
+                                            </div>
+                                        </div>
+                                        </div>
+
+                                        <div class="form-group m-4">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <label for="phone"><h4>Phone</h4></label>
+                                                    <input type="text" class="form-control"
+                                                           th:value="${user.phoneNumber}" name="phone" id="phone"
+                                                           placeholder="enter phone"
+                                                           title="enter your phone number if any.">
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="h4" for="location">Address</label>
+                                                    <input type="text" class="form-control" name="address"
+                                                           id="location" th:field="${user.address}"
+                                                           placeholder="somewhere" title="enter a location">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group m-4">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <label  class="h4" for="email">Email</label>
+                                                    <input type="email" class="form-control" name="email" id="email"
+                                                           th:field="${user.email}" placeholder="you@email.com"
+                                                           title="enter your email." readonly>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group m-4">
+                                            <div class="col-xs-12">
+                                                <div class="row">
+                                                    <div class="col-3">
+                                                        <a class="btn btn-primary" th:href="@{/userHistory/list/{id}(id=${user.id})}">
+                                                            <i class="glyphicon glyphicon-arrow-left"></i> User History
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <button class="btn btn-success" type="submit">
+                                                            <i class="glyphicon glyphicon-ok-sign"></i> Save
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <a class="btn btn-secondary" href="/user/profile">
+                                                            <i class="glyphicon glyphicon-repeat"></i> Reset
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- End of Bootstrap Card -->
+
+            </div><!--/col-9-->
+        </div><!--/row-->
+</main>
+<footer>
+    <div class="container-fluid bg-dark text-light py-4">
+        <div class="row">
+            <div class="col-md-3">
+                <h5>Explore</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Catalog</a></li>
+                    <li><a href="#">Order Now</a></li>
+                    <li><a href="#">Deals</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Support</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Customer Service</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>About Us</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Our Story</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Follow Us</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">Twitter</a></li>
+                    <li><a href="#">Instagram</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid bg-secondary text-light text-center py-2">
+        <p>&copy; 2023 Food Ordering Website. All rights reserved.</p>
+    </div>
+</footer>
+
+<!--Delete Modal-->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this account?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <!-- Delete link to the delete URL -->
+                <form th:action="@{/user/delete}" method="post">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Logout Confirmation model-->
+<div class="modal fade" id="logoutConfirmationModal" tabindex="-1" aria-labelledby="logoutConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoutConfirmationModalLabel">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to log out?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <!-- Delete link to the delete URL -->
+                <form th:action="@{/user/logout}" method="post">
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript code for updating the selected image
+    document.getElementById('image').addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

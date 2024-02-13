@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Food Ordering Site</title>
+    <link rel="icon" th:href="@{/img/logo1.png}" href="../../static/img/logo1.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <link href="../../static/css/header.css" rel="stylesheet" th:href="@{/css/header.css}">
+    <link href="../../static/css/footer.css" rel="stylesheet" th:href="@{/css/footer.css}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .menu-section {
+            padding: 50px 0;
+            background-color: #f9f9f9;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .menu-item {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .menu-item img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .search-filter {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+<header class="sticky-top" th:if="${user.role=='User'}">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid" style="min-height: 80px">
+            <a class="navbar-brand" href="#">
+                <!-- Replace the text with your logo or image -->
+                <img src="../../static/img/logo4.png" alt="Logo" th:src="@{/img/logo4.png}">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard/}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"  th:href="@{/dashboard/menu}">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cart/list">Cart</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" role="button" th:text="${user.firstName}" data-bs-toggle="dropdown" aria-expanded="false">
+                            Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/user/profile">View Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Delete Account</button></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" type="button" data-bs-target="#logoutConfirmationModal" data-bs-toggle="modal">Logout</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<!-- Menu Section -->
+<section class="menu-section">
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" th:if="${param.invalidQuantity}">
+        <strong>Invalid Quantity!</strong> Please enter a valid quantity.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Add the search and filters here -->
+            <div class="col-md-3">
+                <div class="search-filter">
+                    <h3>Search and Filter</h3>
+                    <form th:action="@{/dashboard/menu}" method="get">
+
+                    <input type="text" class="form-control mb-3" placeholder="Search for items" name="partialName">
+
+                    <h5>Filter by Category</h5>
+
+
+                    <div th:each="category : ${categories}" class="form-check">
+                        <input class="form-check-input" type="radio" th:value="${category.categoryId}" id="category_${category.categoryId}" name="id">
+                        <label class="form-check-label" for="category_${category.categoryId}" th:text="${category.categoryName}"></label>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Filter</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <h1 class="section-title">Menu</h1>
+                <div class="row" >
+                    <div class="col-md-4" th:each="item:${items}">
+                        <!-- Menu Card 1 -->
+                        <div class="card menu-item">
+                            <img src="../../static/img/momo.jpg" th:src="'data:image/png;base64,'+${item.itemResizeImageBase64}"
+                                 class="card-img-top" alt="Pizza 1" height="200rem" width="200rem">
+                            <div class="card-body">
+                                <h2 class="card-title" th:text="${item.itemName}" >Pepperoni Pizza</h2>
+                                <p class="card-text" th:text="${item.itemDescription}">Tomato sauce, mozzarella cheese, pepperoni, and Italian herbs.</p>
+                                <p class="card-text"><strong>Category:</strong> <span th:text="${item.category.categoryName}">Pizza</span></p>
+                                <p class="card-text"><strong>Price:</strong> <span th:text="${item.itemPrice}">$12.99</span></p>
+                                <p class="card-text"><strong>Available Quantity:</strong> <span th:text="${item.itemQuantity}">10</span></p>
+                                <button class="btn btn-primary" th:if="${item.itemQuantity>0}" id="cartBtn" data-bs-toggle="modal" data-bs-target="#cartConfirmationModal" th:data-item-id="${item.itemId}" th:data-item-name="${item.itemName}" th:data-item-price="${item.itemPrice}" th:data-item-quantity="${item.itemQuantity}">Add to Cart</button>
+                                <button class="btn btn-primary" th:if="${item.itemQuantity<=0}" data-bs-toggle="modal" data-bs-target="#errorMsg">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+
+                        <!-- Cart Confirmation Modal -->
+
+                    <!-- Add more menu items here -->
+                </div>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item">
+                        <a class="page-link" th:if="${currentPage > 1}" th:href="@{/dashboard/menu(page=1, id=${param.id},partialName=${param.partialName})}">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" th:if="${currentPage > 1}" th:href="@{/dashboard/menu(page=${currentPage - 1}, id=${param.id},partialName=${param.partialName})}">Previous</a>
+                    </li>
+                    <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}">
+                        <a class="page-link" th:href="@{/dashboard/menu(page=${pageNumber},id=${param.id},partialName=${param.partialName})}" th:text="${pageNumber}"></a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" th:if="${currentPage < totalPages}" th:href="@{/dashboard/menu(page=${currentPage + 1}, id=${param.id},partialName=${param.partialName})}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" th:if="${currentPage < totalPages}" th:href="@{/dashboard/menu(page=${totalPages}, id=${param.id},partialName=${param.partialName})}">Last</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Error Msg Modal-->
+<div class="modal fade" id="errorMsg" tabindex="-1" aria-labelledby="errorMsg" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal header">
+                <h5 class="modal-title">Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Item is not available!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Cart Confirmation Model-->
+<div class="modal fade" id="cartConfirmationModal" tabindex="-1" aria-labelledby="cartConfirmationModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addToCartModalLabel">Add to Cart</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/cart/add}" method="post">
+            <div class="modal-body">
+
+                <input type="hidden" id="itemId" name="itemId" >
+                <p>Item Name: <span id="itemName" ></span></p>
+                <p>Item Price: Rs.<span id="itemPrice"></span></p>
+                <p>Available Quantity: <span id="itemQuantity" ></span></p>
+                <label for="orderQty">Order Quantity:</label>
+                <input type="number" id="orderQty" class="form-control" value="0" name="cartQty">
+                <p>Total Price: Rs.<span id="totalPrice"></span></p>
+                <input id="total" name="totalPrice" hidden>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Add to Cart</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer >
+    <div class="container-fluid bg-dark text-light py-4">
+        <div class="row">
+            <div class="col-md-3">
+                <h5>Explore</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Catalog</a></li>
+                    <li><a href="#">Order Now</a></li>
+                    <li><a href="#">Deals</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Support</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Customer Service</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>About Us</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Our Story</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Follow Us</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">Twitter</a></li>
+                    <li><a href="#">Instagram</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid bg-secondary text-light text-center py-2">
+        <p>&copy; 2023 Food Ordering Website. All rights reserved.</p>
+    </div>
+</footer>
+
+<!--Delete Modal-->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this account?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <!-- Delete link to the delete URL -->
+                <form th:action="@{/user/delete}" method="post">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Logout Confirmation model-->
+<div class="modal fade" id="logoutConfirmationModal" tabindex="-1" aria-labelledby="logoutConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoutConfirmationModalLabel">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to log out?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <!-- Delete link to the delete URL -->
+                <form th:action="@{/user/logout}" method="post">
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+    $('#cartConfirmationModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        const itemName = button.data('item-name');
+        const itemPrice = button.data('item-price');
+        const itemQuantity = button.data('item-quantity');
+        const itemId = button.data('item-id');
+
+        const modal = $(this);
+        modal.find('#itemId').val(itemId);
+        modal.find('#itemName').text(itemName);
+        modal.find('#itemPrice').text(itemPrice);
+        modal.find('#itemQuantity').text(itemQuantity);
+        modal.find('#orderQuantity').val(1);
+        calculateTotalPrice();
+    });
+
+    document.getElementById('orderQty').addEventListener('input', calculateTotalPrice);
+    function calculateTotalPrice() {
+        const itemPrice = parseFloat(document.getElementById('itemPrice').innerText);
+        const orderQuantity = parseInt(document.getElementById('orderQty').value);
+        const totalPrice = itemPrice * orderQuantity;
+        document.getElementById('totalPrice').innerText = totalPrice.toFixed(2);
+        document.getElementById('total').value=totalPrice.toFixed(2);
+    }
+</script>
+</html>

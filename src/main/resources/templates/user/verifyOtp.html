@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Food Ordering Site</title>
+  <link rel="icon" th:href="@{/img/logo1.png}" href="../../static/img/logo1.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h1 class="text-center mb-4">OTP Verification</h1>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form th:action="@{/user/verifyOtp}" method="post" class="border p-4 rounded bg-light">
+        <div class="form-group">
+          <label for="otp">Enter OTP:</label>
+          <input type="text" id="email" name="email" th:value="${email}" hidden>
+          <input type="text" id="otp" name="otp" class="form-control" maxlength="6" pattern="\d{6}" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Verify OTP</button>
+      </form>
+      <a class="btn btn-secondary btn-block mt-3" id="regenerateBtn" th:href="@{/user/sendEmail/{email}(email=${email})}">Regenerate OTP</a>
+    </div>
+  </div>
+  <div class="mt-4">
+    <h5><strong>Guidelines:</strong></h5>
+    <ul class="list-group">
+      <li class="list-group-item">Your OTP is a 6-digit number.</li>
+      <li class="list-group-item">Please check your email or SMS for the OTP.</li>
+      <li class="list-group-item">Enter the OTP in the field above and click "Verify OTP".</li>
+      <li class="list-group-item">If you did not receive the OTP, please check your spam folder or request a new one.</li>
+    </ul>
+  </div>
+</div>
+<script>
+  let regenerateTimeout;
+  function regenerateOTP() {
+    // Disable the "Regenerate OTP" button
+    const regenerateBtn = document.getElementById('regenerateBtn');
+    regenerateBtn.disabled = true;
+
+    regenerateTimeout = setTimeout(() => {
+      regenerateBtn.disabled = false;
+    }, 60000);
+  }
+  document.addEventListener('DOMContentLoaded', regenerateOTP);
+
+</script>
+</body>
+</html>
